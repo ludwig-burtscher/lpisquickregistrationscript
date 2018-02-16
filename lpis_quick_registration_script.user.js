@@ -7,7 +7,7 @@
 // ==/UserScript==
 
 
-(function TissQuickRegistrationClass() {
+(function LpisQuickRegistrationClass() {
     var self = this;
 
     ///////////////////////////////////////////////////////////////////////
@@ -88,7 +88,7 @@
 
     self.init = function () {
         self.extendJQuery();
-        self.tissQuickRegistration();
+        self.lpisQuickRegistration();
     };
 
     self.extendJQuery = function () {
@@ -101,9 +101,9 @@
         };
     };
 
-    self.tissQuickRegistration = function () {
+    self.lpisQuickRegistration = function () {
         if (options.scriptEnabled) {
-            self.pageLog("TISS Quick Registration Script enabled");
+            self.pageLog("LPIS Quick Registration Script enabled");
             self.pageLog("LVA Number: " + self.getLVANumber());
             self.pageLog("LVA Name: " + self.getLVAName());
             self.pageLog("Selected Tab: " + self.getSelectedTab());
@@ -131,7 +131,7 @@
             }
 
         } else {
-            self.pageLog("TISS Quick Registration Script disabled");
+            self.pageLog("LPIS Quick Registration Script disabled");
         }
     };
 
@@ -323,7 +323,7 @@
     };
 
     self.getOutputField = function () {
-        var outputField = $('#TQRScriptOutput');
+        var outputField = $('#LQRScriptOutput');
         if (outputField.length === 0) {
             self.injectOutputField();
             outputField = self.getOutputField();
@@ -332,7 +332,7 @@
     };
 
     self.getCountdownField = function () {
-        var countdownField = $('#TQRScriptCountdown');
+        var countdownField = $('#LQRScriptCountdown');
         if (countdownField.length === 0) {
             self.injectCountdownField();
             countdownField = self.getCountdownField();
@@ -341,7 +341,7 @@
     };
 
     self.getLogField = function () {
-        var logField = $('#TQRScriptLog');
+        var logField = $('#LQRScriptLog');
         if (logField.length === 0) {
             self.injectLogField();
             logField = self.getLogField();
@@ -356,24 +356,24 @@
 
     self.injectOutputField = function () {
         var el = $('#contentInner');
-        var log = $('#TQRScriptLog');
+        var log = $('#LQRScriptLog');
         if (log.length) {
             el = log;
         }
-        el.before('<div id="TQRScriptOutput" style="color: red; font-weight: bold; font-size: 14pt; padding: 8px 0px;"></div>');
+        el.before('<div id="LQRScriptOutput" style="color: red; font-weight: bold; font-size: 14pt; padding: 8px 0px;"></div>');
     };
 
     self.injectCountdownField = function () {
         var el = $('#contentInner');
-        var log = $('#TQRScriptLog');
+        var log = $('#LQRScriptLog');
         if (log.length) {
             el = log;
         }
-        el.before('<div id="TQRScriptCountdown" style="color: blue; font-weight: bold; font-size: 14pt; padding: 8px 0px;"></div>');
+        el.before('<div id="LQRScriptCountdown" style="color: blue; font-weight: bold; font-size: 14pt; padding: 8px 0px;"></div>');
     };
 
     self.injectLogField = function () {
-        $('#contentInner').before('<div id="TQRScriptLog" style="color: black; background-color: #FFFCD9; font-size: 10pt;"><b>Information Log:</b></div>');
+        $('#contentInner').before('<div id="LQRScriptLog" style="color: black; background-color: #FFFCD9; font-size: 10pt;"><b>Information Log:</b></div>');
     };
 
     self.appendToLogField = function (text) {
