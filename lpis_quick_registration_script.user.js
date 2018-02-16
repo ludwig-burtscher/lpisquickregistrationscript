@@ -1,57 +1,11 @@
 // ==UserScript==
-// @name       TISS Quick Registration Script
-// @namespace  http://www.manuelgeier.com/
-// @version    1.5.3
-// @description  Script to help you to get into the group you want. Opens automatically the right panel, registers automatically and confirms your registration automatically. If you don't want the script to do everything automatically, the focus is already set on the right button, so you only need to confirm. There is also an option available to auto refresh the page, if the registration button is not available yet, so you can open the site and watch the script doing its work. You can also set a specific time when the script should reload the page and start.
-// @match      https://tiss.tuwien.ac.at/*
-// @copyright  2012+, Manuel Geier
+// @name       LPIS Quick Registration Script
+// @description  Script to help you to get into the lva you want.
+// @match      https://lpis.wu.ac.at/*
+// @copyright  2018+, Ludwig Burtscher (based on TISS Quick Registration Script from Manuel Geier; https://github.com/mangei/tissquickregistrationscript)
 // @require    http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js
 // ==/UserScript==
 
-/*
- Changelog:
-
- v1.5.3 [29.02.2016]
- ~ Added: .gitignore
- ~ Fix: missing reference to 'options' object
- ~ Fix: wrong option name ('semesterCheckEnabled' instead of 'lvaSemesterCheckEnabled')
- ~ String/Number compare with === instead of ==, and !== instead of !=
- ~ Fix #9: id no longer available for wrapper element. replace it by element itself and adjust selectors.
- ~ Fix: toggle for groups (now without id selector)
- ~ Fix: group name selector now matches the exact name and not only if it contains the name
-
- v1.5.2 [?]
- - went missing :P
-
- v1.5.1 [09.10.2015]
- ~ Fix: adjusts group label selector
- ~ Fix: Remove leading zero for month which leads to unintended octal interpretation
-
- v1.5 [04.10.2015]
- + allow to enter a study code, if you have multiple ones
- + add flags to en-/disable checks
- ~ Code cleanup
-
- v1.4 [07.09.2013]
- + show or hide logoutput on screen (option: showLog [true/false])
- + many improvements
- ~ Code refactoring
-
- v1.3 [01.03.2013]
- + Feature: automatically presses the Ok button at the final info page
- ~ Code refactoring
-
- v1.2 [27.02.2013]
- + Feature: ability to register to a LVA; just set 'isGroupRegistration' to 'false'
- + Feature: selected group label is now marked with light green
- ~ Bugfix/Quickfix: overflow in setTimeout causes an constant refresh of the page; now the page gets refreshed at least often if the specific start time is in the future
-
- v1.1
- + Feature: Let the script start at a specific time.
-
- v1.0 (2012)
- Initial release
- */
 
 (function TissQuickRegistrationClass() {
     var self = this;
