@@ -27,7 +27,7 @@
         lvaSemesterCheckEnabled: true,
 
         // only if the semester is right, the script is enabled [String]
-        lvaSemester: "SS 2018",
+        lvaSemester: ["SS 2018", "SS 2018", "SS 2018"],
 
         // automatically presses the register button if it is available [true,false]
         autoRegister: true,
@@ -41,7 +41,7 @@
         // define the specific time the script should start [Date]
         // new Date(year, month, day, hours, minutes, seconds, milliseconds)
         // note: months start with 0
-        specificStartTime: new Date(2018, 2-1, 16, 20, 35, 0, 0),
+        specificStartTime: new Date(2018, 2-1, 17, 13, 3, 0, 0),
 
         // if a specific time is defined, the script will refresh some ms sooner to adjust a delay [Integer]
         delayAdjustmentInMs: 300,
@@ -191,8 +191,7 @@
       						if (localStorage.getItem("retry") === null) {
                    	localStorage.setItem("retry", "0"); 
                   } else {
-                    var counter = parseInt(localStorage.getItem("retry")) + 1;
-                    localStorage.setItem("retry", counter); 
+                    self.incrementRetryCount(); 
                   }
                   
                   if (localStorage.getItem("retry") < options.maxRetriesIfFailed) {
@@ -211,21 +210,26 @@
             }
         } else {
           var waitlistButton = self.getWaitlistButton();
+          var waitlistCancelButton = self.getWaitlistCancelButton();
+          var cancelButton = self.getCancelButton();
           
-          if (waitlistButton.length > 0) {
+          if (cancelButton.length > 0) {
+           	//successfully registered for lva
+            self.pageOut("Successfully registered for LVA " + options.lvaNumber[self.getPreference()]);
+            localStorage.removeItem("preference");
+          }
+          
+          if (waitlistButton.length > 0 || waitlistCancelButton.length > 0) {
          		self.incrementPreference();
 						
             if (self.getPreference() < options.lvaNumber.length) {
 							self.pageOut("Selecting next preference");
-              self.onLVAPage();//self.refreshPage();
-            }
-            
-            
+              self.onLVAPage();
+            } else {
+             	self.pageOut("No further preference given. Exiting.");
+              localStorage.removeItem("preference");
+            } 
           }
-          
-          
-          
-            //self.pageOut('no registration button found');
         }
     };
 
@@ -312,6 +316,16 @@
       var row = self.getLVATableRow();  
       return $(row).find(".action form input[value='eintragen']");
     };
+  
+  	self.getWaitlistCancelButton = function () {
+      var row = self.getLVATableRow();
+      return $(row).find(".action form input[value='austragen']");
+    };
+  
+  	self.getCancelButton = function () {
+      var row = self.getLVATableRow();
+      return $(row).find(".action form input[value='ABmelden']");
+    };
 
   
     self.highlight = function (object) {
@@ -319,7 +333,7 @@
     };
 
     self.isCorrectSemester = function () {
-      return self.getSemester() == options.lvaSemester;
+      return self.getSemester() == options.lvaSemester[self.getPreference()];
     };
   
   	self.isCorrectLvaNumber = function () {
@@ -342,8 +356,12 @@
     };
 
     self.doSemesterCheck = function () {
-        if (!self.isCorrectSemester()) {
-            self.pageOut('wrong semester error: expected: ' + options.lvaSemester + ', got: ' + self.getSemester());
+        if (options.lvaSemester.length != options.lvaNumber.length) {
+         		self.pageOut("Number of entries for lva numbers and semester does not match.");
+          	return false;
+        }
+      	if (!self.isCorrectSemester()) {
+            self.pageOut('wrong semester error: expected: ' + options.lvaSemester[self.getPreference()] + ', got: ' + self.getSemester());
             return false;
         }
         return true;
@@ -351,12 +369,21 @@
   
   	self.getPreference = function() {
     	return parseInt(localStorage.getItem("preference")); 
-    }
+    };
   
   	self.incrementPreference = function() {
     	var p = parseInt(localStorage.getItem("preference")) + 1;
       localStorage.setItem("preference", p);
-    }
+    };
+    
+    self.getRetryCount = function () {
+      return parseInt(localStorage.getItem("retry"));
+    };
+  
+  	self.incrementRetryCount = function () {
+      var p = parseInt(localStorage.getItem("retry")) + 1;
+      localStorage.setItem("retry", p);
+    };
 
     self.getFormatedDate = function (date) {
         return "" + date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds() + ":" + date.getMilliseconds();
