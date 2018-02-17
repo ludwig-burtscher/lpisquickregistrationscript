@@ -70,7 +70,7 @@
             self.pageLog("Semester: " + self.getSemester());
 
             if (options.startAtSpecificTime) {
-                self.pageLog("Scripts starts at: " + self.getFormatedDate(options.specificStartTime));
+                self.pageLog("Scripts starts at: " + self.getFormattedDate(options.specificStartTime));
                 self.pageLog("Delay adjustment in ms: " + options.delayAdjustmentInMs);
                 self.startTimer(options.specificStartTime.getTime() - options.delayAdjustmentInMs);
             } else {
@@ -373,7 +373,7 @@
     };
 
 
-    self.getFormatedDate = function (date) {
+    self.getFormattedDate = function (date) {
         return "" + date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds() + ":" + date.getMilliseconds();
     };
 
