@@ -1,11 +1,11 @@
 // ==UserScript==
-// @name       LPIS Quick Registration Script
-// @description  Script to help you to get into the lva you want.
-// @match      http://luddi.bplaced.net/*
-// @author		 Ludwig Burtscher
-// @copyright  2018+, Ludwig Burtscher (based on TISS Quick Registration Script from Manuel Geier; https://github.com/mangei/tissquickregistrationscript)
-// @grant all
-// @require    http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js
+// @name        LPIS Quick Registration Script
+// @description Script to help you to get into the lva you want.
+// @match       http://luddi.bplaced.net/*
+// @author      Ludwig Burtscher
+// @copyright   2018+, Ludwig Burtscher (based on TISS Quick Registration Script from Manuel Geier; https://github.com/mangei/tissquickregistrationscript)
+// @grant       none
+// @require     http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js
 // ==/UserScript==
 
 
@@ -31,9 +31,9 @@
 
         // automatically presses the register button if it is available [true,false]
         autoRegister: true,
-      
-      	// maximum retries if button is deactivated
-      	maxRetriesIfFailed: 5,
+
+        // maximum retries if button is deactivated
+        maxRetriesIfFailed: 5,
 
         // let the script start at a specific time [true,false]
         startAtSpecificTime: false,
@@ -56,32 +56,19 @@
 
 
     self.init = function () {
-        self.extendJQuery();      
         self.lpisQuickRegistration();
-    };
-
-    self.extendJQuery = function () {
-        jQuery.fn.justtext = function () {
-            return $(this).clone()
-                .children()
-                .remove()
-                .end()
-                .text().trim();
-        };
     };
 
     self.lpisQuickRegistration = function () {
         if (options.scriptEnabled) {
-            if (localStorage.getItem("preference") === null) {
-             	localStorage.setItem("preference", "0"); 
-            }
-          
-          	self.pageLog("LPIS Quick Registration Script enabled");
+            self.initPreference();
+
+            self.pageLog("LPIS Quick Registration Script enabled");
             self.pageLog("LVA Number: " + self.getLVANumber());
             self.pageLog("LVA Name: " + self.getLVAName());
             self.pageLog("Lecturer: " + self.getLecturer());
             self.pageLog("Semester: " + self.getSemester());
-          
+
             if (options.startAtSpecificTime) {
                 self.pageLog("Scripts starts at: " + self.getFormatedDate(options.specificStartTime));
                 self.pageLog("Delay adjustment in ms: " + options.delayAdjustmentInMs);
@@ -99,16 +86,16 @@
         if (offset > 0) {
             self.startRefreshTimer(startTime);
         } else if ((offset + 60000) > 0) {
-        		self.analysePage();
+            self.analysePage();
         } else {
-        		self.pageOut("Specified starting time is in the past. Did nothing."); 
+            self.pageOut("Specified starting time is in the past. Did nothing.");
         }
     };
 
     self.startRefreshTimer = function (startTime) {
         self.printTimeToStart(startTime);
 
-        var maxMillis = 2147483647;  
+        var maxMillis = 2147483647;
         var offset = startTime - new Date().getTime();
 
         // prevent an overflow
@@ -136,48 +123,44 @@
     };
 
     self.analysePage = function () {
-    	//user is required to be on LVA page before
-      self.onLVAPage();
+        //user is required to be on LVA page before
+        self.onLVAPage();
     };
 
     self.getLVANumber = function () {
         return options.lvaNumber[self.getPreference()];
     };
-  
-  	self.getLVANumbers = function () {
-     		return options.lvaNumber.toString(); 
-    }
-
+    self.getLVANumbers = function () {
+        return options.lvaNumber.toString();
+    };
     self.getLVAName = function () {
-      var row = self.getLVATableRow();
-      return $(row).find('.ver_title').contents().eq(2).text();
+        var row = self.getLVATableRow();
+        return $(row).find('.ver_title').contents().eq(2).text();
+    };
+    self.getSemester = function () {
+        var row = self.getLVATableRow();
+        return $(row).find('.ver_id span').text();
+    };
+    self.getLecturer = function () {
+        var row = self.getLVATableRow();
+        return $(row).find('.ver_title div').text();
     };
 
-    self.getSemester = function () {
-      var row = self.getLVATableRow();
-      return $(row).find('.ver_id span').text();
-    };
-  
-  	self.getLecturer = function () {
-      var row = self.getLVATableRow();
-      return $(row).find('.ver_title div').text();
-    };
-  	
-  	//retrieves the row with the LVA specified by options.lvaNumber
-  	self.getLVATableRow = function () {
-      return $('.b3k-data tbody tr td').filter(function() {
-        return $(this).children('a').text() == options.lvaNumber[self.getPreference()];
-      }).closest('tr');
+    //retrieves the row with the LVA specified by options.lvaNumber
+    self.getLVATableRow = function () {
+        return $('.b3k-data tbody tr td').filter(function() {
+            return $(this).children('a').text() == options.lvaNumber[self.getPreference()];
+        }).closest('tr');
     };
 
     self.onLVAPage = function () {
-      if (!self.doLvaCheck()) {
+        if (!self.doLvaCheck()) {
             return;
-      }
-      if (options.lvaSemesterCheckEnabled && !self.doSemesterCheck()) {
+        }
+        if (options.lvaSemesterCheckEnabled && !self.doSemesterCheck()) {
             return;
-      }
-      	
+        }
+
         // search for the registration button
         var regButton = self.getRegistrationButton();
 
@@ -187,49 +170,45 @@
             regButton.focus();
 
             if (options.autoRegister) {
-              	if ($(regButton).is(':disabled')) {
-      						if (localStorage.getItem("retry") === null) {
-                   	localStorage.setItem("retry", "0"); 
-                  } else {
-                    self.incrementRetryCount(); 
-                  }
-                  
-                  if (localStorage.getItem("retry") < options.maxRetriesIfFailed) {
-                  	self.refreshPage();  
-                  } else {
-                   	localStorage.removeItem("retry");
-                    localStorage.removeItem("preference");
-                  }
-                  
-      					} else {
-                  regButton.click();
-                  self.pageOut("Button clicked");
+                if ($(regButton).is(':disabled')) {
+                    self.initRetryCount();
+                    self.incrementRetryCount();
+
+                    if (self.getRetryCount() < options.maxRetriesIfFailed) {
+                        self.refreshPage();
+                    } else {
+                        self.removePreference();
+                        self.removeRetryCount();
+                    }
+                } else {
+                    regButton.click();
+                    self.pageOut("Button clicked");
                 }
             } else {
-            		self.pageOut("Did not click button because autoRegister is false"); 
+                self.pageOut("Did not click button because autoRegister is false");
             }
         } else {
-          var waitlistButton = self.getWaitlistButton();
-          var waitlistCancelButton = self.getWaitlistCancelButton();
-          var cancelButton = self.getCancelButton();
-          
-          if (cancelButton.length > 0) {
-           	//successfully registered for lva
-            self.pageOut("Successfully registered for LVA " + options.lvaNumber[self.getPreference()]);
-            localStorage.removeItem("preference");
-          }
-          
-          if (waitlistButton.length > 0 || waitlistCancelButton.length > 0) {
-         		self.incrementPreference();
-						
-            if (self.getPreference() < options.lvaNumber.length) {
-							self.pageOut("Selecting next preference");
-              self.onLVAPage();
-            } else {
-             	self.pageOut("No further preference given. Exiting.");
-              localStorage.removeItem("preference");
-            } 
-          }
+            var waitlistButton = self.getWaitlistButton();
+            var waitlistCancelButton = self.getWaitlistCancelButton();
+            var cancelButton = self.getCancelButton();
+
+            if (cancelButton.length > 0) {
+                //successfully registered for lva
+                self.pageOut("Successfully registered for LVA " + options.lvaNumber[self.getPreference()]);
+                self.removePreference();
+            }
+
+            if (waitlistButton.length > 0 || waitlistCancelButton.length > 0) {
+                self.incrementPreference();
+
+                if (self.getPreference() < options.lvaNumber.length) {
+                    self.pageOut("Selecting next preference");
+                    self.onLVAPage();
+                } else {
+                    self.pageOut("No further preference given. Exiting.");
+                    self.removePreference();
+                }
+            }
         }
     };
 
@@ -308,89 +287,98 @@
     };
 
     self.getRegistrationButton = function () {
-      var row = self.getLVATableRow();  
-      return $(row).find(".action form input[value='anmelden']");
-    };
-  
-  	self.getWaitlistButton = function () {
-      var row = self.getLVATableRow();  
-      return $(row).find(".action form input[value='eintragen']");
-    };
-  
-  	self.getWaitlistCancelButton = function () {
-      var row = self.getLVATableRow();
-      return $(row).find(".action form input[value='austragen']");
-    };
-  
-  	self.getCancelButton = function () {
-      var row = self.getLVATableRow();
-      return $(row).find(".action form input[value='ABmelden']");
+        var row = self.getLVATableRow();
+        return $(row).find(".action form input[value='anmelden']");
     };
 
-  
+    self.getWaitlistButton = function () {
+        var row = self.getLVATableRow();
+        return $(row).find(".action form input[value='eintragen']");
+    };
+
+    self.getWaitlistCancelButton = function () {
+        var row = self.getLVATableRow();
+        return $(row).find(".action form input[value='austragen']");
+    };
+
+    self.getCancelButton = function () {
+        var row = self.getLVATableRow();
+        return $(row).find(".action form input[value='ABmelden']");
+    };
+
+
     self.highlight = function (object) {
         object.css("background-color", "lightgreen");
     };
 
     self.isCorrectSemester = function () {
-      return self.getSemester() == options.lvaSemester[self.getPreference()];
-    };
-  
-  	self.isCorrectLvaNumber = function () {
-     	var row = self.getLVATableRow();
-      return $(row).text().indexOf(options.lvaNumber[self.getPreference()]) != -1;
+        return self.getSemester() == options.lvaSemester[self.getPreference()];
     };
 
-    self.setSelectValue = function ($element, value) {
-        $element.find('option').removeAttr('selected');
-        $element.find('option[value="' + value + '"]').attr('selected', 'selected');
+    self.isCorrectLvaNumber = function () {
+        var row = self.getLVATableRow();
+        return $(row).text().indexOf(options.lvaNumber[self.getPreference()]) != -1;
     };
 
-    
     self.doLvaCheck = function () {
-      	if (!self.isCorrectLvaNumber()) {
-        	self.pageOut('wrong lva number error: expected: ' + options.lvaNumber[self.getPreference()] + ', but this number is not in the list.');
-          return false;
+        if (!self.isCorrectLvaNumber()) {
+            self.pageOut('wrong lva number error: expected: ' + options.lvaNumber[self.getPreference()] + ', but this number is not in the list.');
+            return false;
         }
-      	return true;
+        return true;
     };
 
     self.doSemesterCheck = function () {
         if (options.lvaSemester.length != options.lvaNumber.length) {
-         		self.pageOut("Number of entries for lva numbers and semester does not match.");
-          	return false;
+            self.pageOut("Number of entries for lva numbers and semester does not match.");
+            return false;
         }
-      	if (!self.isCorrectSemester()) {
+        if (!self.isCorrectSemester()) {
             self.pageOut('wrong semester error: expected: ' + options.lvaSemester[self.getPreference()] + ', got: ' + self.getSemester());
             return false;
         }
         return true;
     };
-  
-  	self.getPreference = function() {
-    	return parseInt(localStorage.getItem("preference")); 
+
+    self.initPreference = function () {
+        if (localStorage.getItem("preference") === null) {
+            localStorage.setItem("preference", "0");
+        }
     };
-  
-  	self.incrementPreference = function() {
-    	var p = parseInt(localStorage.getItem("preference")) + 1;
-      localStorage.setItem("preference", p);
+    self.getPreference = function() {
+        return parseInt(localStorage.getItem("preference"));
     };
-    
+    self.incrementPreference = function() {
+        var p = parseInt(localStorage.getItem("preference")) + 1;
+        localStorage.setItem("preference", p);
+    };
+    self.removePreference = function () {
+        localStorage.removeItem("preference");
+    };
+
+    self.initRetryCount = function () {
+        if (localStorage.getItem("retry") === null) {
+            localStorage.setItem("retry", "0");
+        }
+    };
     self.getRetryCount = function () {
-      return parseInt(localStorage.getItem("retry"));
+        return parseInt(localStorage.getItem("retry"));
     };
-  
-  	self.incrementRetryCount = function () {
-      var p = parseInt(localStorage.getItem("retry")) + 1;
-      localStorage.setItem("retry", p);
+    self.incrementRetryCount = function () {
+        var p = parseInt(localStorage.getItem("retry")) + 1;
+        localStorage.setItem("retry", p);
     };
+    self.removeRetryCount = function () {
+        localStorage.removeItem("retry");
+    };
+
 
     self.getFormatedDate = function (date) {
         return "" + date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds() + ":" + date.getMilliseconds();
     };
 
-    self.log = function (message) { 
-      console.log(message);
+    self.log = function (message) {
+        console.log(message);
     };
 
 
