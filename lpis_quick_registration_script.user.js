@@ -32,7 +32,7 @@
         // automatically presses the register button if it is available [true,false]
         autoRegister: true,
 
-        // maximum retries if button is deactivated
+        // maximum retries if button is deactivated [Integer]
         maxRetriesIfFailed: 5,
 
         // let the script start at a specific time [true,false]
