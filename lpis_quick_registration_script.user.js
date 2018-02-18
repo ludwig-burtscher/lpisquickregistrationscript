@@ -23,12 +23,6 @@
         // only if the number is right, the script is enabled [String]
         lvaNumber: ["4724", "5724", "5428"],
 
-        // checks if you are at the correct semester
-        lvaSemesterCheckEnabled: true,
-
-        // only if the semester is right, the script is enabled [String]
-        lvaSemester: ["SS 2018", "SS 2018", "SS 2018"],
-
         // automatically presses the register button if it is available [true,false]
         autoRegister: true,
 
