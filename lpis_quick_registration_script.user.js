@@ -13,7 +13,7 @@
     var self = this;
 
     ///////////////////////////////////////////////////////////////////////
-    // Configurate the script here
+    // Configure the script here
     //
 
     var options = {
