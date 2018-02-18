@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        LPIS Quick Registration Script
 // @description Script to help you to get into the lva you want.
-// @match       http://luddi.bplaced.net/*
+// @match       https://lpis.wu.ac.at/*
 // @author      Ludwig Burtscher
 // @copyright   2018+, Ludwig Burtscher (based on TISS Quick Registration Script from Manuel Geier; https://github.com/mangei/tissquickregistrationscript)
 // @grant       none
@@ -21,7 +21,7 @@
         scriptEnabled: true,
 
         // list of course numbers in order of preference [String]
-        lvaNumber: ["4724", "5724", "5428"],
+        lvaNumber: ["0001", "0002", "0003"],
 
         // automatically presses the register button if it is available [true,false]
         autoRegister: true,
@@ -30,12 +30,12 @@
         maxRetriesIfFailed: 5,
 
         // let the script start at a specific time [true,false]
-        startAtSpecificTime: false,
+        startAtSpecificTime: true,
 
         // define the specific time the script should start [Date]
         // new Date(year, month, day, hours, minutes, seconds, milliseconds)
         // note: months start with 0
-        specificStartTime: new Date(2018, 2-1, 17, 13, 3, 0, 0),
+        specificStartTime: new Date(2018, 2-1, 17, 14, 0, 0, 0),
 
         // if a specific time is defined, the script will refresh some ms sooner to adjust a delay [Integer]
         delayAdjustmentInMs: 300,
