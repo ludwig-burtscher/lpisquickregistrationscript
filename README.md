@@ -1,6 +1,6 @@
 LPIS Quick Registration Script
 ===========================
-by [Ludwig Burtscher]
+by Ludwig Burtscher
 
 
 ## What is it about?
