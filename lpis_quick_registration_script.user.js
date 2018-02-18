@@ -154,12 +154,6 @@
     };
 
     self.onLVAPage = function () {
-        if (!self.doLvaCheck()) {
-            return;
-        }
-        if (options.lvaSemesterCheckEnabled && !self.doSemesterCheck()) {
-            return;
-        }
 
         // search for the registration button
         var regButton = self.getRegistrationButton();
@@ -311,34 +305,6 @@
         object.css("background-color", "lightgreen");
     };
 
-    self.isCorrectSemester = function () {
-        return self.getSemester() == options.lvaSemester[self.getPreference()];
-    };
-
-    self.isCorrectLvaNumber = function () {
-        var row = self.getLVATableRow();
-        return $(row).text().indexOf(options.lvaNumber[self.getPreference()]) != -1;
-    };
-
-    self.doLvaCheck = function () {
-        if (!self.isCorrectLvaNumber()) {
-            self.pageOut('wrong lva number error: expected: ' + options.lvaNumber[self.getPreference()] + ', but this number is not in the list.');
-            return false;
-        }
-        return true;
-    };
-
-    self.doSemesterCheck = function () {
-        if (options.lvaSemester.length != options.lvaNumber.length) {
-            self.pageOut("Number of entries for lva numbers and semester does not match.");
-            return false;
-        }
-        if (!self.isCorrectSemester()) {
-            self.pageOut('wrong semester error: expected: ' + options.lvaSemester[self.getPreference()] + ', got: ' + self.getSemester());
-            return false;
-        }
-        return true;
-    };
 
     self.initPreference = function () {
         if (localStorage.getItem("preference") === null) {
