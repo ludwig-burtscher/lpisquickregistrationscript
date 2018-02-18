@@ -119,7 +119,6 @@
     self.analysePage = function () {
         var registrationButton = self.getRegistrationButton();
         var waitlistButton = self.getWaitlistButton();
-        //TODO remove
         var waitlistCancelButton = self.getWaitlistCancelButton();
         var cancelButton = self.getCancelButton();
 
@@ -193,8 +192,7 @@
 
     //button to register on waitlist passed as argument
     self.onWaitlistPage = function (waitlistButton) {
-        self.highlight(waitlistButton);
-        waitlistButton.click();
+        self.clickButton(waitlistButton);
     };
 
     self.onWaitlistCancelPage = function () {
@@ -214,14 +212,7 @@
 
     //registration button passed as argument
     self.onLVAPage = function (registrationButton) {
-        self.highlight(registrationButton);
-        registrationButton.focus();
-
-        if (options.autoRegister) {
-            registrationButton.click();
-        } else {
-            self.pageOut("Did not click button because autoRegister is false");
-        }
+        self.clickButton(registrationButton);
     };
 
     self.pageOut = function (text) {
@@ -323,6 +314,18 @@
 
     self.highlight = function (object) {
         object.css("background-color", "lightgreen");
+    };
+
+    //highlights button, sets focus and clicks the button if autoRegister is true
+    self.clickButton = function (button) {
+        self.highlight(button);
+        button.focus();
+
+        if (options.autoRegister) {
+            button.click();
+        } else {
+            self.pageOut("Did not click button because autoRegister is false");
+        }
     };
 
 
