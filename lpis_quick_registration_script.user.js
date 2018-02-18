@@ -20,7 +20,7 @@
         // global option to enable or disable the script [true,false]
         scriptEnabled: true,
 
-        // only if the number is right, the script is enabled [String]
+        // list of course numbers in order of preference [String]
         lvaNumber: ["4724", "5724", "5428"],
 
         // automatically presses the register button if it is available [true,false]
