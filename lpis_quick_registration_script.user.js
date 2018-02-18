@@ -75,47 +75,89 @@
         }
     };
 
-    self.startTimer = function (startTime) {
-        var offset = startTime - new Date().getTime();
-        if (offset > 0) {
-            self.startRefreshTimer(startTime);
-        } else if ((offset + 60000) > 0) {
+
+    /**
+     * The following functions might need to be changed
+     * if LPIS page layout changes.
+     */
+    //retrieves the row with the LVA specified by options.lvaNumber
+    self.getLVATableRow = function () {
+        return $('.b3k-data tbody tr td').filter(function() {
+            return $(this).children('a').text() == options.lvaNumber[self.getPreference()];
+        }).closest('tr');
+    };
+    self.getLVANumber = function () {
+        return options.lvaNumber[self.getPreference()];
+    };
+    self.getLVANumbers = function () {
+        return options.lvaNumber.toString();
+    };
+    self.getLVAName = function () {
+        var row = self.getLVATableRow();
+        return $(row).find('.ver_title').contents().eq(2).text();
+    };
+    self.getSemester = function () {
+        var row = self.getLVATableRow();
+        return $(row).find('.ver_id span').text();
+    };
+    self.getLecturer = function () {
+        var row = self.getLVATableRow();
+        return $(row).find('.ver_title div').text();
+    };
+    self.getRegistrationButton = function () {
+        var row = self.getLVATableRow();
+        return $(row).find(".action form input[value='anmelden']");
+    };
+    self.getWaitlistButton = function () {
+        var row = self.getLVATableRow();
+        return $(row).find(".action form input[value='eintragen']");
+    };
+    self.getWaitlistCancelButton = function () {
+        var row = self.getLVATableRow();
+        return $(row).find(".action form input[value='austragen']");
+    };
+    self.getCancelButton = function () {
+        var row = self.getLVATableRow();
+        return $(row).find(".action a").filter(function(index) {
+            return $(this).text() === "ABmelden";
+        });
+    };
+
+
+    /**
+     * Action definitions for each relevant page
+     */
+    self.onDonePage = function () {
+        self.pageOut("Successfully registered for LVA " + options.lvaNumber[self.getPreference()] + ". This is preference number " + (self.getPreference() + 1));
+        self.removePreference();
+    };
+    //button to register on waitlist passed as argument
+    self.onWaitlistPage = function (waitlistButton) {
+        self.clickButton(waitlistButton);
+    };
+    self.onWaitlistCancelPage = function () {
+        self.initPreference();
+        self.incrementPreference();
+
+        if (self.getPreference() < options.lvaNumber.length) {
+            //further preferences available
+            self.pageOut("Selecting next preference.");
             self.analysePage();
         } else {
-            self.pageOut("Specified starting time is in the past. Did nothing.");
+            //no further preferences available
+            self.pageOut("No further preferences given. Exiting.");
+            return;
         }
     };
-
-    self.startRefreshTimer = function (startTime) {
-        self.printTimeToStart(startTime);
-
-        var maxMillis = 2147483647;
-        var offset = startTime - new Date().getTime();
-
-        // prevent an overflow
-        if (offset > maxMillis) {
-            offset = maxMillis;
-        }
-
-        window.setTimeout(self.refreshPage, offset);
+    //registration button passed as argument
+    self.onLVAPage = function (registrationButton) {
+        self.clickButton(registrationButton);
     };
 
-    self.printTimeToStart = function (startTime) {
-        var offset = (startTime - new Date().getTime()) / 1000;
-        var out = "Refresh in: " + offset + " seconds";
-        self.log(out);
 
-        self.pageCountdown(out);
-
-        window.setTimeout(function () {
-            self.printTimeToStart(startTime);
-        }, 1000);
-    };
-
-    self.refreshPage = function () {
-        location.reload();
-    };
-
+    /**
+     * Decide, which page is currently loaded
+     */
     self.analysePage = function () {
         var registrationButton = self.getRegistrationButton();
         var waitlistButton = self.getWaitlistButton();
@@ -159,163 +201,10 @@
         }
     };
 
-    self.getLVANumber = function () {
-        return options.lvaNumber[self.getPreference()];
-    };
-    self.getLVANumbers = function () {
-        return options.lvaNumber.toString();
-    };
-    self.getLVAName = function () {
-        var row = self.getLVATableRow();
-        return $(row).find('.ver_title').contents().eq(2).text();
-    };
-    self.getSemester = function () {
-        var row = self.getLVATableRow();
-        return $(row).find('.ver_id span').text();
-    };
-    self.getLecturer = function () {
-        var row = self.getLVATableRow();
-        return $(row).find('.ver_title div').text();
-    };
 
-    //retrieves the row with the LVA specified by options.lvaNumber
-    self.getLVATableRow = function () {
-        return $('.b3k-data tbody tr td').filter(function() {
-            return $(this).children('a').text() == options.lvaNumber[self.getPreference()];
-        }).closest('tr');
-    };
-
-    self.onDonePage = function () {
-        self.pageOut("Successfully registered for LVA " + options.lvaNumber[self.getPreference()] + ". This is preference number " + (self.getPreference() + 1));
-        self.removePreference();
-    };
-
-    //button to register on waitlist passed as argument
-    self.onWaitlistPage = function (waitlistButton) {
-        self.clickButton(waitlistButton);
-    };
-
-    self.onWaitlistCancelPage = function () {
-        self.initPreference();
-        self.incrementPreference();
-
-        if (self.getPreference() < options.lvaNumber.length) {
-            //further preferences available
-            self.pageOut("Selecting next preference.");
-            self.analysePage(); //TODO check if refresh is necessary
-        } else {
-            //no further preferences available
-            self.pageOut("No further preferences given. Exiting.");
-            return;
-        }
-    };
-
-    //registration button passed as argument
-    self.onLVAPage = function (registrationButton) {
-        self.clickButton(registrationButton);
-    };
-
-    self.pageOut = function (text) {
-        var out = self.getOutputField();
-        out.text(text);
-    };
-
-    self.pageCountdown = function (text) {
-        var out = self.getCountdownField();
-        out.text(text);
-    };
-
-    self.pageLog = function (text) {
-        self.appendToLogField(text);
-    };
-
-    self.getOutputField = function () {
-        var outputField = $('#LQRScriptOutput');
-        if (outputField.length === 0) {
-            self.injectOutputField();
-            outputField = self.getOutputField();
-        }
-        return outputField;
-    };
-
-    self.getCountdownField = function () {
-        var countdownField = $('#LQRScriptCountdown');
-        if (countdownField.length === 0) {
-            self.injectCountdownField();
-            countdownField = self.getCountdownField();
-        }
-        return countdownField;
-    };
-
-    self.getLogField = function () {
-        var logField = $('#LQRScriptLog');
-        if (logField.length === 0) {
-            self.injectLogField();
-            logField = self.getLogField();
-            if (options.showLog) {
-                logField.show();
-            } else {
-                logField.hide();
-            }
-        }
-        return logField;
-    };
-
-    self.injectOutputField = function () {
-        var el = $('.b3k-data');
-        var log = $('#LQRScriptLog');
-        if (log.length) {
-            el = log;
-        }
-        el.before('<div id="LQRScriptOutput" style="color: red; font-weight: bold; font-size: 14pt; padding: 8px 0px;"></div>');
-    };
-
-    self.injectCountdownField = function () {
-        var el = $('.b3k-data');
-        var log = $('#LQRScriptLog');
-        if (log.length) {
-            el = log;
-        }
-        el.before('<div id="LQRScriptCountdown" style="color: blue; font-weight: bold; font-size: 14pt; padding: 8px 0px;"></div>');
-    };
-
-    self.injectLogField = function () {
-        $('.b3k-data').before('<div id="LQRScriptLog" style="color: black; background-color: #FFFCD9; font-size: 10pt;"><b>Information Log:</b></div>');
-    };
-
-    self.appendToLogField = function (text) {
-        var log = self.getLogField();
-        var newText = log.html() + "<br />" + text;
-        log.html(newText);
-    };
-
-    self.getRegistrationButton = function () {
-        var row = self.getLVATableRow();
-        return $(row).find(".action form input[value='anmelden']");
-    };
-
-    self.getWaitlistButton = function () {
-        var row = self.getLVATableRow();
-        return $(row).find(".action form input[value='eintragen']");
-    };
-
-    self.getWaitlistCancelButton = function () {
-        var row = self.getLVATableRow();
-        return $(row).find(".action form input[value='austragen']");
-    };
-
-    self.getCancelButton = function () {
-        var row = self.getLVATableRow();
-        return $(row).find(".action a").filter(function(index) {
-            return $(this).text() === "ABmelden";
-        });
-    };
-
-
-    self.highlight = function (object) {
-        object.css("background-color", "lightgreen");
-    };
-
+    /**
+     * Own helper functions
+     */
     //highlights button, sets focus and clicks the button if autoRegister is true
     self.clickButton = function (button) {
         self.highlight(button);
@@ -327,8 +216,6 @@
             self.pageOut("Did not click button because autoRegister is false");
         }
     };
-
-
     self.initPreference = function () {
         if (localStorage.getItem("preference") === null) {
             localStorage.setItem("preference", "0");
@@ -344,7 +231,6 @@
     self.removePreference = function () {
         localStorage.removeItem("preference");
     };
-
     self.initRetryCount = function () {
         if (localStorage.getItem("retry") === null) {
             localStorage.setItem("retry", "0");
@@ -362,10 +248,117 @@
     };
 
 
+    /**
+     * Functions taken from TISS Quick registration script
+     * Copyright by Manuel Geier (https://github.com/mangei/tissquickregistrationscript)
+     */
+    self.startTimer = function (startTime) {
+        var offset = startTime - new Date().getTime();
+        if (offset > 0) {
+            self.startRefreshTimer(startTime);
+        } else if ((offset + 60000) > 0) {
+            self.analysePage();
+        } else {
+            self.pageOut("Specified starting time is in the past. Did nothing.");
+        }
+    };
+    self.startRefreshTimer = function (startTime) {
+        self.printTimeToStart(startTime);
+
+        var maxMillis = 2147483647;
+        var offset = startTime - new Date().getTime();
+
+        // prevent an overflow
+        if (offset > maxMillis) {
+            offset = maxMillis;
+        }
+
+        window.setTimeout(self.refreshPage, offset);
+    };
+    self.printTimeToStart = function (startTime) {
+        var offset = (startTime - new Date().getTime()) / 1000;
+        var out = "Refresh in: " + offset + " seconds";
+        self.log(out);
+
+        self.pageCountdown(out);
+
+        window.setTimeout(function () {
+            self.printTimeToStart(startTime);
+        }, 1000);
+    };
+    self.refreshPage = function () {
+        location.reload();
+    };
+    self.pageOut = function (text) {
+        var out = self.getOutputField();
+        out.text(text);
+    };
+    self.pageCountdown = function (text) {
+        var out = self.getCountdownField();
+        out.text(text);
+    };
+    self.pageLog = function (text) {
+        self.appendToLogField(text);
+    };
+    self.getOutputField = function () {
+        var outputField = $('#LQRScriptOutput');
+        if (outputField.length === 0) {
+            self.injectOutputField();
+            outputField = self.getOutputField();
+        }
+        return outputField;
+    };
+    self.getCountdownField = function () {
+        var countdownField = $('#LQRScriptCountdown');
+        if (countdownField.length === 0) {
+            self.injectCountdownField();
+            countdownField = self.getCountdownField();
+        }
+        return countdownField;
+    };
+    self.getLogField = function () {
+        var logField = $('#LQRScriptLog');
+        if (logField.length === 0) {
+            self.injectLogField();
+            logField = self.getLogField();
+            if (options.showLog) {
+                logField.show();
+            } else {
+                logField.hide();
+            }
+        }
+        return logField;
+    };
+    self.injectOutputField = function () {
+        var el = $('.b3k-data');
+        var log = $('#LQRScriptLog');
+        if (log.length) {
+            el = log;
+        }
+        el.before('<div id="LQRScriptOutput" style="color: red; font-weight: bold; font-size: 14pt; padding: 8px 0px;"></div>');
+    };
+    self.injectCountdownField = function () {
+        var el = $('.b3k-data');
+        var log = $('#LQRScriptLog');
+        if (log.length) {
+            el = log;
+        }
+        el.before('<div id="LQRScriptCountdown" style="color: blue; font-weight: bold; font-size: 14pt; padding: 8px 0px;"></div>');
+    };
+    self.injectLogField = function () {
+        $('.b3k-data').before('<div id="LQRScriptLog" style="color: black; background-color: #FFFCD9; font-size: 10pt;"><b>Information Log:</b></div>');
+    };
+    self.appendToLogField = function (text) {
+        var log = self.getLogField();
+        var newText = log.html() + "<br />" + text;
+        log.html(newText);
+    };
+    self.highlight = function (object) {
+        object.css("background-color", "lightgreen");
+    };
     self.getFormattedDate = function (date) {
         return "" + date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds() + ":" + date.getMilliseconds();
     };
-
     self.log = function (message) {
         console.log(message);
     };
