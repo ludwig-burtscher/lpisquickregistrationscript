@@ -4,7 +4,7 @@ by Ludwig Burtscher\
 based on TISS Quick Registration Script by Manuel Geier (https://github.com/mangei/tissquickregistrationscript)
 
 ## What is it about?
-It is very hard to get into the course (LVA) you want if many other students also try to register for the same course. Especially on WU you have to be faster the the others. To avoid the stressful moment when the registration slots open, the use of an automatic script seems appropriate. It tries to outperform manual registration through a very fast response time.
+It is very hard to get into the course (LVA) you want if many other students also try to register for the same course. Especially at WU you have to be faster than the others. To avoid the stressful moment when the registration slots open, the use of an automatic script seems appropriate. It tries to outperform manual registration through a very fast response time.
 
 
 ### A brief description of the script and its possibilities
@@ -23,7 +23,7 @@ The UserScript helps you to get into the course you want on LPIS fully automatic
 1. Configure the script (see Configuration) to fulfill your requirements for a specific registration to a course.
 1. Go to the specific course registration webpage in LPIS, where you want to register.
 1. Enable the script.
-1. Lean back and let the script do its job (it automatically starts if you entered a start date or starts immediately if no start date is configured).
+1. Lean back and let the script do its job (it starts automatically if you entered a start date or immediately if no start date is configured).
 1. Don’t forget to disable the UserScript if the registration is done.
 
 
