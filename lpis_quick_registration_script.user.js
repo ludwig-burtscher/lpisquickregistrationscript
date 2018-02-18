@@ -297,7 +297,9 @@
 
     self.getCancelButton = function () {
         var row = self.getLVATableRow();
-        return $(row).find(".action form input[value='ABmelden']");
+        return $(row).find(".action a").filter(function(index) {
+            return $(this).text() === "ABmelden";
+        });
     };
 
 
