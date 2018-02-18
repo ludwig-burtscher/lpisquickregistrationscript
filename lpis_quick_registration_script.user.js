@@ -117,8 +117,47 @@
     };
 
     self.analysePage = function () {
-        //user is required to be on LVA page before
-        self.onLVAPage();
+        var registrationButton = self.getRegistrationButton();
+        var waitlistButton = self.getWaitlistButton();
+        //TODO remove
+        var waitlistCancelButton = self.getWaitlistCancelButton();
+        var cancelButton = self.getCancelButton();
+
+        if (registrationButton.length > 0) {
+            //there is a registration button
+            if ($(registrationButton).is(':disabled')) {
+                //registration button is still disabled --> refresh page
+                self.initRetryCount();
+                self.incrementRetryCount();
+
+                if (self.getRetryCount() <= options.maxRetriesIfFailed) {
+                    self.refreshPage();
+                } else {
+                    //maximum number of retries reached --> exiting
+                    self.removePreference();
+                    self.removeRetryCount();
+                    self.pageOut("Reached specified maximum number of retries without success. Exiting.");
+                    return;
+                }
+            } else {
+                //registration button is active --> click it
+                self.onLVAPage(registrationButton);
+            }
+        } else if (cancelButton.length > 0) {
+            //successfully registered
+            self.onDonePage();
+        } else if (waitlistButton.length > 0) {
+            //only waitlist possible
+            self.onWaitlistPage(waitlistButton);
+        } else if (waitlistCancelButton.length > 0) {
+            //registered for waitlist --> continue with next preference
+            self.onWaitlistCancelPage();
+        } else {
+            //encountered unrecognized page
+            self.pageOut("Unrecognized page. Doing nothing.");
+            self.removePreference();
+            return;
+        }
     };
 
     self.getLVANumber = function () {
@@ -147,56 +186,41 @@
         }).closest('tr');
     };
 
-    self.onLVAPage = function () {
+    self.onDonePage = function () {
+        self.pageOut("Successfully registered for LVA " + options.lvaNumber[self.getPreference()] + ". This is preference number " + (self.getPreference() + 1));
+        self.removePreference();
+    };
 
-        // search for the registration button
-        var regButton = self.getRegistrationButton();
+    //button to register on waitlist passed as argument
+    self.onWaitlistPage = function (waitlistButton) {
+        self.highlight(waitlistButton);
+        waitlistButton.click();
+    };
 
-        // push the button
-        if (regButton.length > 0) {
-            self.highlight(regButton);
-            regButton.focus();
+    self.onWaitlistCancelPage = function () {
+        self.initPreference();
+        self.incrementPreference();
 
-            if (options.autoRegister) {
-                if ($(regButton).is(':disabled')) {
-                    self.initRetryCount();
-                    self.incrementRetryCount();
-
-                    if (self.getRetryCount() < options.maxRetriesIfFailed) {
-                        self.refreshPage();
-                    } else {
-                        self.removePreference();
-                        self.removeRetryCount();
-                    }
-                } else {
-                    regButton.click();
-                    self.pageOut("Button clicked");
-                }
-            } else {
-                self.pageOut("Did not click button because autoRegister is false");
-            }
+        if (self.getPreference() < options.lvaNumber.length) {
+            //further preferences available
+            self.pageOut("Selecting next preference.");
+            self.analysePage(); //TODO check if refresh is necessary
         } else {
-            var waitlistButton = self.getWaitlistButton();
-            var waitlistCancelButton = self.getWaitlistCancelButton();
-            var cancelButton = self.getCancelButton();
+            //no further preferences available
+            self.pageOut("No further preferences given. Exiting.");
+            return;
+        }
+    };
 
-            if (cancelButton.length > 0) {
-                //successfully registered for lva
-                self.pageOut("Successfully registered for LVA " + options.lvaNumber[self.getPreference()]);
-                self.removePreference();
-            }
+    //registration button passed as argument
+    self.onLVAPage = function (registrationButton) {
+        self.highlight(registrationButton);
+        registrationButton.focus();
 
-            if (waitlistButton.length > 0 || waitlistCancelButton.length > 0) {
-                self.incrementPreference();
-
-                if (self.getPreference() < options.lvaNumber.length) {
-                    self.pageOut("Selecting next preference");
-                    self.onLVAPage();
-                } else {
-                    self.pageOut("No further preference given. Exiting.");
-                    self.removePreference();
-                }
-            }
+        if (options.autoRegister) {
+            registrationButton.click();
+        } else {
+            self.pageOut("Did not click button because autoRegister is false");
         }
     };
 
