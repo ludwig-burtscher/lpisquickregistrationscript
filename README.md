@@ -1,6 +1,6 @@
 LPIS Quick Registration Script
 ===========================
-by Ludwig Burtscher
+by Ludwig Burtscher\
 based on TISS Quick Registration Script by Manuel Geier (https://github.com/mangei/tissquickregistrationscript)
 
 ## What is it about?
