@@ -1,7 +1,7 @@
 LPIS Quick Registration Script
 ===========================
 by Ludwig Burtscher
-
+based on TISS Quick Registration Script by Manuel Geier (https://github.com/mangei/tissquickregistrationscript)
 
 ## What is it about?
 It is very hard to get into the course (LVA) you want if many other students also try to register for the same course. Especially on WU you have to be faster the the others. To avoid the stressful moment when the registration slots open, the use of an automatic script seems appropriate. It tries to outperform manual registration through a very fast response time.
